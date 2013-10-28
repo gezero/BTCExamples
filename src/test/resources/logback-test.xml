@@ -10,7 +10,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.lordofthejars.foo" level="INFO" additivity="false">
+    <logger name="org.springframework" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 

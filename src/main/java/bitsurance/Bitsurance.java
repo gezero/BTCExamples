@@ -2,6 +2,7 @@ package bitsurance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,10 +12,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Bitsurance {
+    @Autowired
+    BitsuranceNetworkParameters bitsuranceNetworkParameters;
+
     private static final Logger logger = LoggerFactory.getLogger(Bitsurance.class);
 
-    public int test(){
-        logger.info("testing");
+    public int test() {
+        logger.info(bitsuranceNetworkParameters.getFilePrefix());
         return 1;
     }
 }

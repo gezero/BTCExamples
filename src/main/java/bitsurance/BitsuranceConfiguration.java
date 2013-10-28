@@ -1,5 +1,7 @@
 package bitsurance;
 
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.params.TestNet3Params;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,7 +14,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BitsuranceConfiguration {
     @Bean
-    public Bitsurance bitsurance(){
+    public Bitsurance bitsurance() {
         return new Bitsurance();
+    }
+
+    @Bean
+    public BitsuranceNetworkParameters testNetwork() {
+        NetworkParameters params = TestNet3Params.get();
+        String filePrefix = "forwarding-service-testnet";
+        return new BitsuranceNetworkParameters(params, filePrefix);
+    }
+    @Bean
+    public String testNetReturnAddress(){
+        return "n3A5Gd7935JkAegvvZBxNujkKQZDwYmuMJ";
     }
 }

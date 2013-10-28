@@ -6,7 +6,7 @@ repositories {
         url 'http://distribution.bitcoinj.googlecode.com/git/releases'
     }
 }
-configurations{
+configurations {
     compile.exclude module: 'commons-logging'
 }
 
