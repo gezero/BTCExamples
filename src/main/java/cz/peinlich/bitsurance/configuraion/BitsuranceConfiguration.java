@@ -1,6 +1,6 @@
-package bitsurance.configuraion;
+package cz.peinlich.bitsurance.configuraion;
 
-import bitsurance.BitsuranceNetworkParameters;
+import cz.peinlich.bitsurance.BitsuranceNetworkParameters;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.kits.WalletAppKit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.io.File;
 
 @Configuration
 @Import(TestNetworkConfiguration.class)
-@ComponentScan(basePackages = {"bitsurance"})
+@ComponentScan(basePackages = {"cz.peinlich.cz.peinlich.bitsurance"})
 public class BitsuranceConfiguration {
     @Autowired
     BitsuranceNetworkParameters bitsuranceNetworkParameters;

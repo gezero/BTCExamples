@@ -1,4 +1,4 @@
-package bitsurance;
+package cz.peinlich.bitsurance;
 
 import com.google.bitcoin.kits.WalletAppKit;
 import org.slf4j.Logger;

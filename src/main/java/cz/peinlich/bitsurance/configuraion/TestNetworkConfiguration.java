@@ -1,6 +1,6 @@
-package bitsurance.configuraion;
+package cz.peinlich.bitsurance.configuraion;
 
-import bitsurance.BitsuranceNetworkParameters;
+import cz.peinlich.bitsurance.BitsuranceNetworkParameters;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.params.TestNet3Params;
 import org.springframework.context.annotation.Bean;

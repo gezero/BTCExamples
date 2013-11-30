@@ -1,4 +1,4 @@
-package bitsurance;
+package cz.peinlich.bitsurance;
 
 import com.google.bitcoin.core.NetworkParameters;
 import org.springframework.beans.factory.annotation.Autowired;
