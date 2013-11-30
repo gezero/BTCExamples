@@ -1,8 +1,9 @@
-package cz.peinlich.bitsurance.configuraion;
+package cz.peinlich.configuration;
 
 import cz.peinlich.bitsurance.BitsuranceNetworkParameters;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.kits.WalletAppKit;
+import cz.peinlich.configuration.TestNetworkConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +20,7 @@ import java.io.File;
 
 @Configuration
 @Import(TestNetworkConfiguration.class)
-@ComponentScan(basePackages = {"cz.peinlich.cz.peinlich.bitsurance"})
+@ComponentScan(basePackages = {"cz.peinlich.bitsurance"})
 public class BitsuranceConfiguration {
     @Autowired
     BitsuranceNetworkParameters bitsuranceNetworkParameters;

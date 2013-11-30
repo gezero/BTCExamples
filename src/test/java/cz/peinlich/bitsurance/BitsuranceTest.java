@@ -1,6 +1,6 @@
 package cz.peinlich.bitsurance;
 
-import cz.peinlich.bitsurance.configuraion.BitsuranceConfiguration;
+import cz.peinlich.configuration.BitsuranceConfiguration;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.kits.WalletAppKit;
 import com.google.common.util.concurrent.FutureCallback;

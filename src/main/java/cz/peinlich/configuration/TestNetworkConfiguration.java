@@ -1,4 +1,4 @@
-package cz.peinlich.bitsurance.configuraion;
+package cz.peinlich.configuration;
 
 import cz.peinlich.bitsurance.BitsuranceNetworkParameters;
 import com.google.bitcoin.core.NetworkParameters;
