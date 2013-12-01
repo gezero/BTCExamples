@@ -1,12 +1,15 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.kits.WalletAppKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
+import java.util.List;
 
 /**
  * User: George
@@ -27,7 +30,11 @@ public class Seller implements CanSignTransactions {
 
     @Override
     public byte[] generateNewPublicKey() {
-        throw new UnsupportedOperationException("Should get to this");
+        //TODO: this part is only getting already used key, in general it should create new address and use its key
+        Wallet wallet = kit.wallet();
+        List<ECKey> keys = wallet.getKeys();
+        ECKey ecKey = keys.get(0);
+        return ecKey.getPubKey();
     }
 
     public void createSpendingTransaction(Transaction depositTransaction, byte[] escrowPublicKey) {
