@@ -1,11 +1,11 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.security.PublicKey;
+import java.security.SignatureException;
 
 /**
  * User: George
@@ -16,25 +16,27 @@ import java.security.PublicKey;
 public class Buyer implements CanSignTransactions{
     @Autowired
     Escrow escrow;
-    private String nonce = "random nonce should this be";
 
-    public Transaction createDepositTransaction(PublicKey sellerPublicKey, PublicKey escrowPublicKey) {
+    public Transaction createDepositTransaction(byte[] sellerPublicKey, byte[] escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
         throw new UnsupportedOperationException("will get here");
     }
 
     @Override
-    public PublicKey generateNewPublicKey() {
-        return null;  //TODO: this is default template
+    public byte[] generateNewPublicKey() {
+        throw new UnsupportedOperationException("Should get to this");
     }
 
 
-    private void challengeEscrow(PublicKey escrowPublicKey) {
+    private void challengeEscrow(byte[] escrowPublicKey) {
+        String nonce = "random nonce should this be";
         String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
-        checkSignature(signature, escrowPublicKey);
+        ECKey key = new ECKey(null, escrowPublicKey,true);
+        try {
+            key.verifyMessage(nonce, signature);
+        } catch (SignatureException e) {
+            throw new RuntimeException("Signature was not verified");
+        }
     }
 
-    private void checkSignature(String nonce, PublicKey escrowPublicKey) {
-        throw new UnsupportedOperationException("will get here sooner or later");
-    }
 }

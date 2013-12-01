@@ -17,8 +17,8 @@ public class Market {
     Escrow escrow;
 
     public void match(Buyer buyer, Seller seller) {
-        PublicKey sellerPublicKey = seller.generateNewPublicKey();
-        PublicKey escrowPublicKey = escrow.generateNewPublicKey();
+        byte[] escrowPublicKey = escrow.generateNewPublicKey();
+        byte[] sellerPublicKey = seller.generateNewPublicKey();
         Transaction depositTransaction = buyer.createDepositTransaction(sellerPublicKey, escrowPublicKey);
 
 /*

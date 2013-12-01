@@ -1,10 +1,10 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
 import org.springframework.stereotype.Component;
 
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -17,31 +17,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component
 public class Escrow implements CanSignTransactions {
 
-    Map<PublicKey,PrivateKey> keys;
+    Map<byte[], ECKey> keys = new HashMap<byte[], ECKey>();
 
 
-    public String pleaseSignNonce(PublicKey escrowPublicKey, String nonce) {
-        PrivateKey privateKey = keys.get(escrowPublicKey);
+    public String pleaseSignNonce(byte[] escrowPublicKey, String nonce) {
+        ECKey privateKey = keys.get(escrowPublicKey);
 
         return sign(nonce,privateKey);
     }
 
-    private String sign(String nonce, PrivateKey privateKey) {
+    private String sign(String nonce, ECKey privateKey) {
         checkNotNull(privateKey);
-        throw new UnsupportedOperationException("will come to this later");
+        return privateKey.signMessage(nonce);
     }
 
     @Override
-    public PublicKey generateNewPublicKey() {
-
-        PublicKey publicKey = null;
-        PrivateKey privateKey = null;
-
-        //TODO: we need to generate the keys
-
-        checkNotNull(publicKey);
-        checkNotNull(privateKey);
-
+    public byte[] generateNewPublicKey() {
+        ECKey privateKey = new ECKey();
+        byte[] publicKey = privateKey.getPubKey();
         keys.put(publicKey,privateKey);
         return publicKey;
     }

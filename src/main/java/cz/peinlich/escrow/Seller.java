@@ -19,22 +19,22 @@ public class Seller implements CanSignTransactions {
 
 
     @Override
-    public PublicKey generateNewPublicKey() {
-        return null;  //TODO: this is default template
+    public byte[] generateNewPublicKey() {
+        throw new UnsupportedOperationException("Should get to this");
     }
 
-    public void createSpendingTransaction(Transaction depositTransaction, PublicKey escrowPublicKey) {
+    public void createSpendingTransaction(Transaction depositTransaction, byte[] escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
 
         throw new UnsupportedOperationException("will get here sooner or later");
     }
 
-    private void challengeEscrow(PublicKey escrowPublicKey) {
+    private void challengeEscrow(byte[] escrowPublicKey) {
         String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
         checkSignature(signature, escrowPublicKey);
     }
 
-    private void checkSignature(String nonce, PublicKey escrowPublicKey) {
+    private void checkSignature(String nonce, byte[] escrowPublicKey) {
         throw new UnsupportedOperationException("will get here sooner or later");
     }
 }

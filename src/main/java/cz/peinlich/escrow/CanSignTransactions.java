@@ -8,5 +8,5 @@ import java.security.PublicKey;
  * Time: 9:05
  */
 public interface CanSignTransactions {
-    PublicKey generateNewPublicKey();
+    byte[] generateNewPublicKey();
 }
