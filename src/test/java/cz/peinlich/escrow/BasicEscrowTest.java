@@ -73,6 +73,9 @@ public class BasicEscrowTest {
 
     @Test
     public void buyerSellerAgreeScenario(){
+        buyer.start();
+        seller.start();
+        escrow.start();
 
         market.match(buyer,seller);
 
