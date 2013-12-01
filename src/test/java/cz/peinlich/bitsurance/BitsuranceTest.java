@@ -36,7 +36,7 @@ public class BitsuranceTest {
     @Autowired
     Bitsurance bitsurance;
     @Autowired
-    BitsuranceNetworkParameters bitsuranceNetworkParameters;
+    NetworkParameters networkParameters;
     @Autowired
     @Qualifier("workingDirectory")
     String workingDirectory;
@@ -55,7 +55,7 @@ public class BitsuranceTest {
 
     @Before
     public void createForwardingAddress() throws AddressFormatException {
-        forwardingAddress = new Address(bitsuranceNetworkParameters.getNetworkParameters(), returnAddress);
+        forwardingAddress = new Address(networkParameters, returnAddress);
     }
 
     @Test

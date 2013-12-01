@@ -1,6 +1,5 @@
 package cz.peinlich.configuration;
 
-import cz.peinlich.bitsurance.BitsuranceNetworkParameters;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.params.TestNet3Params;
 import org.springframework.context.annotation.Bean;
@@ -13,19 +12,11 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class TestNetworkConfiguration {
-    @Bean
-    public BitsuranceNetworkParameters testNetwork() {
-        return new BitsuranceNetworkParameters();
-    }
+
 
     @Bean
     public NetworkParameters testNetworkParams() {
         return TestNet3Params.get();
-    }
-
-    @Bean
-    public String networkFilePrefix() {
-        return "forwarding-service-testnet";
     }
 
     @Bean
