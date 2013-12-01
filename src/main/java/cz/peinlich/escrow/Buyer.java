@@ -2,7 +2,9 @@ package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.kits.WalletAppKit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.security.SignatureException;
@@ -13,9 +15,12 @@ import java.security.SignatureException;
  * Time: 8:47
  */
 @Component
-public class Buyer implements CanSignTransactions{
+public class Buyer implements CanSignTransactions {
     @Autowired
     Escrow escrow;
+    @Autowired
+    @Qualifier("buyerWallet")
+    WalletAppKit kit;
 
     public Transaction createDepositTransaction(byte[] sellerPublicKey, byte[] escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
@@ -27,11 +32,10 @@ public class Buyer implements CanSignTransactions{
         throw new UnsupportedOperationException("Should get to this");
     }
 
-
     private void challengeEscrow(byte[] escrowPublicKey) {
         String nonce = "random nonce should this be";
         String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
-        ECKey key = new ECKey(null, escrowPublicKey,true);
+        ECKey key = new ECKey(null, escrowPublicKey, true);
         try {
             key.verifyMessage(nonce, signature);
         } catch (SignatureException e) {
@@ -39,4 +43,7 @@ public class Buyer implements CanSignTransactions{
         }
     }
 
+    public void start() {
+        kit.startAndWait();
+    }
 }

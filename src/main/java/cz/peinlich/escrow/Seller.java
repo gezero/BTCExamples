@@ -1,7 +1,9 @@
 package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.kits.WalletAppKit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
@@ -15,6 +17,11 @@ import java.security.PublicKey;
 public class Seller implements CanSignTransactions {
     @Autowired
     Escrow escrow;
+
+    @Autowired
+    @Qualifier("sellerWallet")
+    WalletAppKit kit;
+
     String nonce="testNonceString, should be randomly generated I guess";
 
 
@@ -36,5 +43,9 @@ public class Seller implements CanSignTransactions {
 
     private void checkSignature(String nonce, byte[] escrowPublicKey) {
         throw new UnsupportedOperationException("will get here sooner or later");
+    }
+
+    public void start() {
+        kit.startAndWait();
     }
 }

@@ -27,7 +27,27 @@ public class BasicEscrowTest {
     Seller seller;
 
     @Autowired
+    Escrow escrow;
+
+    @Autowired
     Market market;
+
+    /**
+     * Run this test first, this will sync each actors blockchain info.
+     * It will take forever, but it will be saved to the disk and need to be done "only once" for each actor :P
+     *
+     * After the sync finishes, the test stops and you can play with the other tests, if you will not run this one first
+     * the sync will be done in some other test and you will just not know when it finished.
+     *
+     *
+     */
+    @Test
+    public void synchronizeWithNetwork(){
+        buyer.start();
+        seller.start();
+        escrow.start();
+
+    }
 
 
     @Test

@@ -1,6 +1,9 @@
 package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.kits.WalletAppKit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
@@ -16,6 +19,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Component
 public class Escrow implements CanSignTransactions {
+
+    @Autowired
+    @Qualifier("escrowWallet")
+    WalletAppKit kit;
 
     Map<byte[], ECKey> keys = new HashMap<byte[], ECKey>();
 
@@ -37,5 +44,9 @@ public class Escrow implements CanSignTransactions {
         byte[] publicKey = privateKey.getPubKey();
         keys.put(publicKey,privateKey);
         return publicKey;
+    }
+
+    public void start() {
+        kit.startAndWait();
     }
 }
