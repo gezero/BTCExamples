@@ -34,7 +34,7 @@ public class Buyer implements CanSignTransactions {
     public Transaction createDepositTransaction(ECKey sellerPublicKey, ECKey escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
         ECKey buyerPublicKey = generateNewPublicKey();
-        return buildDepositTransaction(buyerPublicKey,sellerPublicKey,escrowPublicKey);
+        return buildDepositTransaction(buyerPublicKey, sellerPublicKey, escrowPublicKey);
     }
 
     private Transaction buildDepositTransaction(ECKey buyerPublicKey, ECKey sellerPublicKey, ECKey escrowPublicKey) {
@@ -42,8 +42,8 @@ public class Buyer implements CanSignTransactions {
 
         Transaction transaction = new Transaction(kit.params());
         BigInteger value = wallet.getBalance().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
-        Script script = ScriptBuilder.createMultiSigOutputScript(2, Arrays.asList(buyerPublicKey,sellerPublicKey,escrowPublicKey));
-        transaction.addOutput(value,script);
+        Script script = ScriptBuilder.createMultiSigOutputScript(2, Arrays.asList(buyerPublicKey, sellerPublicKey, escrowPublicKey));
+        transaction.addOutput(value, script);
 
 //        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(transaction));
 //        return sendResult.tx;  TODO: use this in the final test
@@ -56,7 +56,7 @@ public class Buyer implements CanSignTransactions {
         Wallet wallet = kit.wallet();
         List<ECKey> keys = wallet.getKeys();
         ECKey ecKey = keys.get(0);
-        return new ECKey(null,ecKey.getPubKey());
+        return new ECKey(null, ecKey.getPubKey());
     }
 
     private void challengeEscrow(ECKey escrowPublicKey) {
@@ -83,11 +83,13 @@ public class Buyer implements CanSignTransactions {
         spendingTransaction.getInput(0).getScriptBytes();
         try {
             TransactionSignature transactionSignature = spendingTransaction.calculateSignature(0, ecKey, depositTransaction.getOutput(0).getScriptPubKey(), Transaction.SigHash.ALL, true);
-            spendingTransaction.getInput(0).setScriptSig(ScriptBuilder.createMultiSigInputScript(Lists.newArrayList(transactionSignature,spendingTransactionAndSignature.getSignature())));
+            spendingTransaction.getInput(0).setScriptSig(ScriptBuilder.createMultiSigInputScript(Lists.newArrayList(transactionSignature, spendingTransactionAndSignature.getSignature())));
 
         } catch (ScriptException e) {
             throw new RuntimeException("Script is not build properly");
         }
+
+//        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(spendingTransaction));
 
     }
 }
