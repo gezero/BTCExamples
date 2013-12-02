@@ -67,6 +67,13 @@ public class BitsuranceTest {
     /**
      *  This test is waiting for money and then sends them to the faucet return address. First I thought that
      *  the faucet return address will stay the same, but it changed. It is configured in TestNetworkConfiguration.
+     *
+     *  To use this test, run it, it will write into the log the address you should send test faucet money to.
+     *  Search for the string Keys:
+     *
+     *  There will be huge! time first sync when you will first run this test, because it is syncing with the
+     *  test network.
+     *
      * @throws InterruptedException
      */
     @Test
