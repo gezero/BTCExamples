@@ -87,8 +87,7 @@ public class BasicEscrowTest {
 
         if (BigInteger.ZERO.equals(balance)){
             logger.info("No balance on buyer");
-            List<ECKey> keys = wallet.getKeys();
-            logger.info("Send funds to the address {}",keys.get(0));
+            logger.info("Using wallet: {}", wallet);
             throw new RuntimeException("No balance on buyer");
         }
 
