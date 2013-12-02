@@ -84,6 +84,8 @@ public class BasicEscrowTest {
         escrow.start();
 
 
+        logger.info("Seller balance: {}", seller.kit.wallet().getBalance());
+
         Wallet wallet = buyer.kit.wallet();
         BigInteger balance = wallet.getBalance();
 

@@ -3,9 +3,8 @@ package cz.peinlich.escrow;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.crypto.TransactionSignature;
 import com.google.bitcoin.kits.WalletAppKit;
-import com.google.bitcoin.script.Script;
-import com.google.bitcoin.script.ScriptBuilder;
-import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -21,19 +20,16 @@ import java.util.List;
  */
 @Component
 public class Seller implements CanSignTransactions {
+    public static final Logger logger = LoggerFactory.getLogger(Seller.class);
     @Autowired
     Escrow escrow;
-
     @Autowired
     @Qualifier("sellerWallet")
     WalletAppKit kit;
-
     @Autowired
     @Qualifier("testNetReturnAddress")
     String returnAddress;
-
-    String nonce="testNonceString, should be randomly generated I guess";
-
+    String nonce = "testNonceString, should be randomly generated I guess";
 
     @Override
     public ECKey generateNewPublicKey() {
@@ -41,7 +37,7 @@ public class Seller implements CanSignTransactions {
         Wallet wallet = kit.wallet();
         List<ECKey> keys = wallet.getKeys();
         ECKey ecKey = keys.get(0);
-        return new ECKey(null,ecKey.getPubKey());
+        return new ECKey(null, ecKey.getPubKey());
     }
 
     public TransactionAndSignature createSpendingTransaction(Transaction depositTransaction, ECKey escrowPublicKey) {
@@ -51,7 +47,7 @@ public class Seller implements CanSignTransactions {
         List<ECKey> keys = wallet.getKeys();
         ECKey ecKey = keys.get(0);
 
-        ECKey dummyKey = new ECKey(null,BigInteger.ZERO);
+        ECKey dummyKey = new ECKey(null, BigInteger.ZERO);
 
         Transaction spendingTransaction = new Transaction(kit.params());
 
@@ -60,28 +56,27 @@ public class Seller implements CanSignTransactions {
 
         BigInteger value = output.getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
         Address address = getReturnAddress();
-        spendingTransaction.addOutput(value,address);
+        spendingTransaction.addOutput(value, address);
 
 
 //        TransactionInput input = new TransactionInput(kit.params(),depositTransaction,scriptBytes,new TransactionOutPoint(kit.params(),0,depositTransaction));
         spendingTransaction.addInput(output);
 
         try {
-            TransactionSignature signature = spendingTransaction.calculateSignature(0,ecKey, output.getScriptPubKey(), Transaction.SigHash.ALL,true);
+            TransactionSignature signature = spendingTransaction.calculateSignature(0, ecKey, output.getScriptPubKey(), Transaction.SigHash.ALL, true);
 //            spendingTransaction.getInput(0).setScriptSig(ScriptBuilder.createMultiSigInputScript(Lists.newArrayList(signature,signature)));
-            return new TransactionAndSignature(spendingTransaction,signature);
+            return new TransactionAndSignature(spendingTransaction, signature);
         } catch (ScriptException e) {
             throw new RuntimeException("Script is not correctly set up");
         }
     }
 
     private Address getReturnAddress() {
+        Wallet wallet = kit.wallet();
+        ECKey ecKey = wallet.getKeys().get(0);
         Address address;
-        try {
-            address = new Address(kit.params(),returnAddress);
-        } catch (AddressFormatException e) {
-            throw new RuntimeException("could not format address");
-        }
+        logger.info("using address {}", ecKey.getPubKeyHash());
+        address = new Address(kit.params(), ecKey.getPubKeyHash());
         return address;
     }
 
