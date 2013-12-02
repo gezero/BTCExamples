@@ -1,6 +1,7 @@
 package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import cz.peinlich.configuration.EscrowConfiguration;
 import org.joda.time.DateTime;
@@ -77,6 +78,10 @@ public class BasicEscrowTest {
     }
 
 
+    /**
+     * This case is the thing! it creates escrow transaction and later seller sends
+     * transaction to himself that spends the escrow transaction.
+     */
     @Test
     public void buyerSellerAgreeScenario(){
         buyer.start();
@@ -96,6 +101,30 @@ public class BasicEscrowTest {
         }
 
         market.match(buyer,seller);
+
+    }
+
+
+    /**
+     * Use this case to send all sellers funds back to buyer.
+     */
+    @Test
+    public void sendSendersFundsBackToBuyer(){
+        buyer.start();
+        seller.start();
+
+
+        Wallet wallet = seller.kit.wallet();
+        BigInteger balance = wallet.getBalance();
+
+        if (BigInteger.ZERO.equals(balance)){
+            logger.info("not much to send, try again later?");
+            logger.info("No balance on seller");
+            logger.info("Using wallet: {}", wallet);
+        }
+
+        final BigInteger amountToSend = balance.subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+        wallet.sendCoins(seller.kit.peerGroup(),buyer.kit.wallet().getKeys().get(0).toAddress(seller.kit.params()),amountToSend);
 
     }
 }
