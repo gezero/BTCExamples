@@ -52,6 +52,8 @@ public class BasicEscrowTest {
      * synced by running this test for second time. It will end much much much faster.
      *
      *
+     *
+     * im using this faucet to get some coins: http://testnet.mojocoin.com/
      */
     @Test
     public void synchronizeWithNetwork(){
