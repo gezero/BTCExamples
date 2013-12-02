@@ -45,9 +45,9 @@ public class Buyer implements CanSignTransactions {
         Script script = ScriptBuilder.createMultiSigOutputScript(2, Arrays.asList(buyerPublicKey, sellerPublicKey, escrowPublicKey));
         transaction.addOutput(value, script);
 
-//        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(transaction));
-//        return sendResult.tx;  TODO: use this in the final test
-        return transaction;
+        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(transaction));
+        return sendResult.tx;
+//        return transaction;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Buyer implements CanSignTransactions {
             throw new RuntimeException("Script is not build properly");
         }
 
-//        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(spendingTransaction));
+        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(spendingTransaction));
 
     }
 }
