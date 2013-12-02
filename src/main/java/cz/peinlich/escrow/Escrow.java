@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,10 +23,10 @@ public class Escrow implements CanSignTransactions {
     @Qualifier("escrowWallet")
     WalletAppKit kit;
 
-    Map<byte[], ECKey> keys = new HashMap<byte[], ECKey>();
+    Map<ECKey, ECKey> keys = new HashMap<ECKey, ECKey>();
 
 
-    public String pleaseSignNonce(byte[] escrowPublicKey, String nonce) {
+    public String pleaseSignNonce(ECKey escrowPublicKey, String nonce) {
         ECKey privateKey = keys.get(escrowPublicKey);
 
         return sign(nonce,privateKey);
@@ -39,11 +38,11 @@ public class Escrow implements CanSignTransactions {
     }
 
     @Override
-    public byte[] generateNewPublicKey() {
+    public ECKey generateNewPublicKey() {
         ECKey privateKey = new ECKey();
         byte[] publicKey = privateKey.getPubKey();
-        keys.put(publicKey,privateKey);
-        return publicKey;
+        keys.put(new ECKey(null,publicKey),privateKey);
+        return new ECKey(null,publicKey);
     }
 
     public void start() {

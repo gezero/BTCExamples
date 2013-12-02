@@ -1,5 +1,6 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,8 @@ public class Market {
     Escrow escrow;
 
     public void match(Buyer buyer, Seller seller) {
-        byte[] escrowPublicKey = escrow.generateNewPublicKey();
-        byte[] sellerPublicKey = seller.generateNewPublicKey();
+        ECKey escrowPublicKey = escrow.generateNewPublicKey();
+        ECKey sellerPublicKey = seller.generateNewPublicKey();
         Transaction depositTransaction = buyer.createDepositTransaction(sellerPublicKey, escrowPublicKey);
 
 /*

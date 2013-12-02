@@ -1,5 +1,7 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 import cz.peinlich.configuration.EscrowConfiguration;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -12,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: George
@@ -76,6 +80,19 @@ public class BasicEscrowTest {
         buyer.start();
         seller.start();
         escrow.start();
+
+
+        Wallet wallet = buyer.kit.wallet();
+        BigInteger balance = wallet.getBalance();
+
+        /* TODO: use this to check we have money
+        if (BigInteger.ZERO.equals(balance)){
+            logger.info("No balance on buyer");
+            List<ECKey> keys = wallet.getKeys();
+            logger.info("Send funds to the address {}",keys.get(0));
+            throw new RuntimeException("No balance on buyer");
+        }
+        */
 
         market.match(buyer,seller);
 

@@ -21,7 +21,8 @@ public class TestNetworkConfiguration {
 
     @Bean
     public String testNetReturnAddress() {
-        return "n3A5Gd7935JkAegvvZBxNujkKQZDwYmuMJ";
+//        return "n3A5Gd7935JkAegvvZBxNujkKQZDwYmuMJ";
+        return "mhRe8LKHpFHje8e1KMEhMt5XVmG9dDCLuL";
     }
 
     @Bean

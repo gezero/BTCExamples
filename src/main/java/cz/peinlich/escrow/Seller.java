@@ -1,14 +1,13 @@
 package cz.peinlich.escrow;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.kits.WalletAppKit;
+import com.google.bitcoin.script.Script;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.List;
 
 /**
@@ -29,27 +28,36 @@ public class Seller implements CanSignTransactions {
 
 
     @Override
-    public byte[] generateNewPublicKey() {
+    public ECKey generateNewPublicKey() {
         //TODO: this part is only getting already used key, in general it should create new address and use its key
         Wallet wallet = kit.wallet();
         List<ECKey> keys = wallet.getKeys();
         ECKey ecKey = keys.get(0);
-        return ecKey.getPubKey();
+        return new ECKey(null,ecKey.getPubKey());
     }
 
-    public void createSpendingTransaction(Transaction depositTransaction, byte[] escrowPublicKey) {
+    public void createSpendingTransaction(Transaction depositTransaction, ECKey escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
 
+        Transaction spendingTransaction = new Transaction(kit.params());
+
+        TransactionOutput output = depositTransaction.getOutput(0);
+
+        byte[] scriptBytes=null;
+        TransactionInput input = new TransactionInput(kit.params(),depositTransaction,scriptBytes,new TransactionOutPoint(kit.params(),0,depositTransaction));
+        spendingTransaction.addInput(input);
+
         throw new UnsupportedOperationException("will get here sooner or later");
     }
 
-    private void challengeEscrow(byte[] escrowPublicKey) {
+    private void challengeEscrow(ECKey escrowPublicKey) {
+        String nonce = "random nonce should this be";
         String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
-        checkSignature(signature, escrowPublicKey);
-    }
-
-    private void checkSignature(String nonce, byte[] escrowPublicKey) {
-        throw new UnsupportedOperationException("will get here sooner or later");
+        try {
+            escrowPublicKey.verifyMessage(nonce, signature);
+        } catch (SignatureException e) {
+            throw new RuntimeException("Signature was not verified");
+        }
     }
 
     public void start() {

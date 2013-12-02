@@ -4,11 +4,15 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.kits.WalletAppKit;
+import com.google.bitcoin.script.Script;
+import com.google.bitcoin.script.ScriptBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.security.SignatureException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,31 +28,39 @@ public class Buyer implements CanSignTransactions {
     @Qualifier("buyerWallet")
     WalletAppKit kit;
 
-    public Transaction createDepositTransaction(byte[] sellerPublicKey, byte[] escrowPublicKey) {
+    public Transaction createDepositTransaction(ECKey sellerPublicKey, ECKey escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
-        byte[] buyerPublicKey = generateNewPublicKey();
+        ECKey buyerPublicKey = generateNewPublicKey();
         return buildDepositTransaction(buyerPublicKey,sellerPublicKey,escrowPublicKey);
     }
 
-    private Transaction buildDepositTransaction(byte[] buyerPublicKey, byte[] sellerPublicKey, byte[] escrowPublicKey) {
-        throw new UnsupportedOperationException("will get here");
+    private Transaction buildDepositTransaction(ECKey buyerPublicKey, ECKey sellerPublicKey, ECKey escrowPublicKey) {
+        Wallet wallet = kit.wallet();
+
+        Transaction transaction = new Transaction(kit.params());
+        BigInteger value = wallet.getBalance().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+        Script script = ScriptBuilder.createMultiSigOutputScript(2, Arrays.asList(buyerPublicKey,sellerPublicKey,escrowPublicKey));
+        transaction.addOutput(value,script);
+
+//        Wallet.SendResult sendResult = wallet.sendCoins(kit.peerGroup(), Wallet.SendRequest.forTx(transaction));
+//        return sendResult.tx;  TODO: use this in the final test
+        return transaction;
     }
 
     @Override
-    public byte[] generateNewPublicKey() {
+    public ECKey generateNewPublicKey() {
         //TODO: this part is only getting already used key, in general it should create new address and use its key
         Wallet wallet = kit.wallet();
         List<ECKey> keys = wallet.getKeys();
         ECKey ecKey = keys.get(0);
-        return ecKey.getPubKey();
+        return new ECKey(null,ecKey.getPubKey());
     }
 
-    private void challengeEscrow(byte[] escrowPublicKey) {
+    private void challengeEscrow(ECKey escrowPublicKey) {
         String nonce = "random nonce should this be";
         String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
-        ECKey key = new ECKey(null, escrowPublicKey, true);
         try {
-            key.verifyMessage(nonce, signature);
+            escrowPublicKey.verifyMessage(nonce, signature);
         } catch (SignatureException e) {
             throw new RuntimeException("Signature was not verified");
         }

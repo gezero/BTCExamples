@@ -1,5 +1,7 @@
 package cz.peinlich.escrow;
 
+import com.google.bitcoin.core.ECKey;
+
 import java.security.PublicKey;
 
 /**
@@ -8,5 +10,5 @@ import java.security.PublicKey;
  * Time: 9:05
  */
 public interface CanSignTransactions {
-    byte[] generateNewPublicKey();
+    ECKey generateNewPublicKey();
 }

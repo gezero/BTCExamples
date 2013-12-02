@@ -64,6 +64,11 @@ public class BitsuranceTest {
         assertThat(bitsurance.test(), is(1));
     }
 
+    /**
+     *  This test is waiting for money and then sends them to the faucet return address. First I thought that
+     *  the faucet return address will stay the same, but it changed. It is configured in TestNetworkConfiguration.
+     * @throws InterruptedException
+     */
     @Test
     public void firstWalletTest() throws InterruptedException {
 
