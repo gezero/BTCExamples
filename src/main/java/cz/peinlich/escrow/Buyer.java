@@ -1,11 +1,14 @@
 package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.TransactionSignature;
 import com.google.bitcoin.kits.WalletAppKit;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.script.ScriptBuilder;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -68,5 +71,23 @@ public class Buyer implements CanSignTransactions {
 
     public void start() {
         kit.startAndWait();
+    }
+
+    public void addSignature(Transaction depositTransaction, TransactionAndSignature spendingTransactionAndSignature) {
+        Wallet wallet = kit.wallet();
+        List<ECKey> keys = wallet.getKeys();
+        ECKey ecKey = keys.get(0);
+
+        Transaction spendingTransaction = spendingTransactionAndSignature.getTransaction();
+
+        spendingTransaction.getInput(0).getScriptBytes();
+        try {
+            TransactionSignature transactionSignature = spendingTransaction.calculateSignature(0, ecKey, depositTransaction.getOutput(0).getScriptPubKey(), Transaction.SigHash.ALL, true);
+            spendingTransaction.getInput(0).setScriptSig(ScriptBuilder.createMultiSigInputScript(Lists.newArrayList(transactionSignature,spendingTransactionAndSignature.getSignature())));
+
+        } catch (ScriptException e) {
+            throw new RuntimeException("Script is not build properly");
+        }
+
     }
 }

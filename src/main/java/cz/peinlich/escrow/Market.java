@@ -2,10 +2,9 @@ package cz.peinlich.escrow;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.crypto.TransactionSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.security.PublicKey;
 
 /**
  * User: George
@@ -22,17 +21,14 @@ public class Market {
         ECKey sellerPublicKey = seller.generateNewPublicKey();
         Transaction depositTransaction = buyer.createDepositTransaction(sellerPublicKey, escrowPublicKey);
 
-/*
-        if (noFeeForMarket(depositTransaction)){
-            Transaction returnTransaction = createReturnDepositToBuyerTransaction(depositTransaction,buyer);
-            buyer.returnDeposit(returnTransaction);
-            return;
-        }
-*/
 
-        seller.createSpendingTransaction(depositTransaction, escrowPublicKey);
+        TransactionAndSignature spendingTransactionAndSignature = seller.createSpendingTransaction(depositTransaction, escrowPublicKey);
+
+        buyer.addSignature(depositTransaction,spendingTransactionAndSignature);
 
 
     }
+
+
 
 }
