@@ -27,7 +27,6 @@ public class Merchant  {
     @Autowired
     @Qualifier("merchantWallet")
     WalletAppKit kit;
-    @Autowired
 
     /**
      * returns key that we want to use in the transaction.
