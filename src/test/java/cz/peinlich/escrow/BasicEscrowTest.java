@@ -60,32 +60,32 @@ public class BasicEscrowTest {
         DateTime buyerComplete = new DateTime();
         logger.info("Buyer synced. It took {}.", new Duration(start,buyerComplete));
 
-        logger.info("Syncing Seller.");
+        logger.info("Syncing merchant.");
         merchant.start();
-        DateTime sellerComplete = new DateTime();
-        logger.info("Seller synced. It took {}.", new Duration(buyerComplete,sellerComplete));
+        DateTime merchantComplete = new DateTime();
+        logger.info("merchant synced. It took {}.", new Duration(buyerComplete,merchantComplete));
 
         logger.info("Syncing Escrow");
         escrow.start();
         DateTime escrowComplete = new DateTime();
-        logger.info("Escrow synced. It took {}.", new Duration(sellerComplete,escrowComplete));
+        logger.info("Escrow synced. It took {}.", new Duration(merchantComplete,escrowComplete));
 
         logger.info("Sync complete. Alltogether it took {}.", new Duration(start,escrowComplete));
     }
 
 
     /**
-     * This case is the thing! it creates escrow transaction and later seller sends
+     * This case is the thing! it creates escrow transaction and later merchant sends
      * transaction to himself that spends the escrow transaction.
      */
     @Test
-    public void buyerSellerAgreeScenario(){
+    public void buyermerchantAgreeScenario(){
         buyer.start();
         merchant.start();
         escrow.start();
 
 
-        logger.info("Seller balance: {}", merchant.kit.wallet().getBalance());
+        logger.info("merchant balance: {}", merchant.kit.wallet().getBalance());
 
         Wallet wallet = buyer.kit.wallet();
         BigInteger balance = wallet.getBalance();
@@ -102,7 +102,7 @@ public class BasicEscrowTest {
 
 
     /**
-     * Use this case to send all sellers funds back to buyer.
+     * Use this case to send all merchants funds back to buyer.
      */
     @Test
     public void sendSendersFundsBackToBuyer(){
@@ -115,8 +115,9 @@ public class BasicEscrowTest {
 
         if (BigInteger.ZERO.equals(balance)){
             logger.info("not much to send, try again later?");
-            logger.info("No balance on seller");
+            logger.info("No balance on merchant");
             logger.info("Using wallet: {}", wallet);
+            throw new RuntimeException("No balance on merchant");
         }
 
         final BigInteger amountToSend = balance.subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
