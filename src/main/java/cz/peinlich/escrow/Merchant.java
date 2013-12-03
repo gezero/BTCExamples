@@ -13,76 +13,87 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.List;
 
-/**
+/** This entity represents someone who wants to sell his precious goods (like money) for bitcoins
+ *
  * User: George
  * Date: 30.11.13
  * Time: 8:47
  */
 @Component
-public class Seller implements CanSignTransactions {
-    public static final Logger logger = LoggerFactory.getLogger(Seller.class);
+public class Merchant  {
+    public static final Logger logger = LoggerFactory.getLogger(Merchant.class);
     @Autowired
     Escrow escrow;
     @Autowired
-    @Qualifier("sellerWallet")
+    @Qualifier("merchantWallet")
     WalletAppKit kit;
     @Autowired
-    @Qualifier("testNetReturnAddress")
-    String returnAddress;
-    String nonce = "testNonceString, should be randomly generated I guess";
 
-    @Override
-    public ECKey generateNewPublicKey() {
+    /**
+     * returns key that we want to use in the transaction.
+     */
+    public ECKey getPublicKeyToPutInTransactions() {
         //TODO: this part is only getting already used key, in general it should create new address and use its key
-        Wallet wallet = kit.wallet();
-        List<ECKey> keys = wallet.getKeys();
-        ECKey ecKey = keys.get(0);
+        ECKey ecKey = getPrivateKeyForSigning();
         return new ECKey(null, ecKey.getPubKey());
     }
 
+    /**
+     * When the depositing transaction is already created, we want to spend the money.
+     */
     public TransactionAndSignature createSpendingTransaction(Transaction depositTransaction, ECKey escrowPublicKey) {
         challengeEscrow(escrowPublicKey);
+        checkThatOursKeyIsUsed(depositTransaction);
 
-        Wallet wallet = kit.wallet();
-        List<ECKey> keys = wallet.getKeys();
-        ECKey ecKey = keys.get(0);
-
-        ECKey dummyKey = new ECKey(null, BigInteger.ZERO);
-
+        // When we checked that the deposit transaction is ok
+        // We start by creating new transaction
         Transaction spendingTransaction = new Transaction(kit.params());
 
+        // We want to spend the deposit transaction. So we will put the proper output as input input into our transaction
         TransactionOutput output = depositTransaction.getOutput(0);
+        spendingTransaction.addInput(output);
 
-
+        // We want to spend as much as possible, but we pay the standard transaction fee
         BigInteger value = output.getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+
+        //The spending is done to our address
         Address address = getReturnAddress();
         spendingTransaction.addOutput(value, address);
 
-
-//        TransactionInput input = new TransactionInput(kit.params(),depositTransaction,scriptBytes,new TransactionOutPoint(kit.params(),0,depositTransaction));
-        spendingTransaction.addInput(output);
-
         try {
-            TransactionSignature signature = spendingTransaction.calculateSignature(0, ecKey, output.getScriptPubKey(), Transaction.SigHash.ALL, true);
-//            spendingTransaction.getInput(0).setScriptSig(ScriptBuilder.createMultiSigInputScript(Lists.newArrayList(signature,signature)));
+            // We create signature of the transaction
+            ECKey ecKey = getPrivateKeyForSigning();
+            TransactionSignature signature = spendingTransaction.calculateSignature(0, ecKey, output.getScriptPubKey(), Transaction.SigHash.ALL, false);
             return new TransactionAndSignature(spendingTransaction, signature);
         } catch (ScriptException e) {
             throw new RuntimeException("Script is not correctly set up");
         }
     }
 
+    /**
+     * This method gets the private key that we want to use to sign the transaction. It has to be tha same key that was
+     * previously put into the deposit transaction.
+     */
+    private ECKey getPrivateKeyForSigning() {
+        Wallet wallet = kit.wallet();
+        List<ECKey> keys = wallet.getKeys();
+        return keys.get(0);
+    }
+
+    private void checkThatOursKeyIsUsed(Transaction depositTransaction) {
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
     private Address getReturnAddress() {
         Wallet wallet = kit.wallet();
         ECKey ecKey = wallet.getKeys().get(0);
-        Address address;
-        logger.info("using address {}", ecKey.getPubKeyHash());
-        address = new Address(kit.params(), ecKey.getPubKeyHash());
-        return address;
+        logger.info("Using address {}", ecKey.getPubKeyHash());
+        return ecKey.toAddress(kit.params());
     }
 
     private void challengeEscrow(ECKey escrowPublicKey) {
         String nonce = "random nonce should this be";
-        String signature = escrow.pleaseSignNonce(escrowPublicKey, nonce);
+        String signature = escrow.signMessage(escrowPublicKey, nonce);
         try {
             escrowPublicKey.verifyMessage(nonce, signature);
         } catch (SignatureException e) {

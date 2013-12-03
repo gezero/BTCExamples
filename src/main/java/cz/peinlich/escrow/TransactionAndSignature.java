@@ -4,9 +4,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.crypto.TransactionSignature;
 
 /**
- * User: George
- * Date: 2.12.13
- * Time: 8:10
+ * Stupid java does not allow to return 2 things from a method.
  */
 public class TransactionAndSignature{
     Transaction transaction;

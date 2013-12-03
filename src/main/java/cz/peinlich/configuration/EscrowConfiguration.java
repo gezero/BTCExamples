@@ -35,8 +35,8 @@ public class EscrowConfiguration {
     }
 
     @Bean
-    public String sellerWalletPrefix() {
-        return "escrow-seller";
+    public String merchantWalletPrefix() {
+        return "escrow-merchant";
     }
 
     @Bean
@@ -60,8 +60,8 @@ public class EscrowConfiguration {
     }
 
     @Bean
-    public WalletAppKit sellerWallet() {
-        return new WalletAppKit(networkParameters, new File(workingDirectory), sellerWalletPrefix()) {
+    public WalletAppKit merchantWallet() {
+        return new WalletAppKit(networkParameters, new File(workingDirectory), merchantWalletPrefix()) {
             @Override
             protected void onSetupCompleted() {
                 // This is called in a background thread after startAndWait is called, as setting up various objects

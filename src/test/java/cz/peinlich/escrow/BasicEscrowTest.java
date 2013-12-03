@@ -1,12 +1,10 @@
 package cz.peinlich.escrow;
 
-import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import cz.peinlich.configuration.EscrowConfiguration;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.Period;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,8 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
 
 /**
  * User: George
@@ -34,7 +30,7 @@ public class BasicEscrowTest {
     Buyer buyer;
 
     @Autowired
-    Seller seller;
+    Merchant merchant;
 
     @Autowired
     Escrow escrow;
@@ -65,7 +61,7 @@ public class BasicEscrowTest {
         logger.info("Buyer synced. It took {}.", new Duration(start,buyerComplete));
 
         logger.info("Syncing Seller.");
-        seller.start();
+        merchant.start();
         DateTime sellerComplete = new DateTime();
         logger.info("Seller synced. It took {}.", new Duration(buyerComplete,sellerComplete));
 
@@ -85,11 +81,11 @@ public class BasicEscrowTest {
     @Test
     public void buyerSellerAgreeScenario(){
         buyer.start();
-        seller.start();
+        merchant.start();
         escrow.start();
 
 
-        logger.info("Seller balance: {}", seller.kit.wallet().getBalance());
+        logger.info("Seller balance: {}", merchant.kit.wallet().getBalance());
 
         Wallet wallet = buyer.kit.wallet();
         BigInteger balance = wallet.getBalance();
@@ -100,7 +96,7 @@ public class BasicEscrowTest {
             throw new RuntimeException("No balance on buyer");
         }
 
-        market.match(buyer,seller);
+        market.match(buyer, merchant);
 
     }
 
@@ -111,10 +107,10 @@ public class BasicEscrowTest {
     @Test
     public void sendSendersFundsBackToBuyer(){
         buyer.start();
-        seller.start();
+        merchant.start();
 
 
-        Wallet wallet = seller.kit.wallet();
+        Wallet wallet = merchant.kit.wallet();
         BigInteger balance = wallet.getBalance();
 
         if (BigInteger.ZERO.equals(balance)){
@@ -124,7 +120,7 @@ public class BasicEscrowTest {
         }
 
         final BigInteger amountToSend = balance.subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
-        wallet.sendCoins(seller.kit.peerGroup(),buyer.kit.wallet().getKeys().get(0).toAddress(seller.kit.params()),amountToSend);
+        wallet.sendCoins(merchant.kit.peerGroup(),buyer.kit.wallet().getKeys().get(0).toAddress(merchant.kit.params()),amountToSend);
 
     }
 }
